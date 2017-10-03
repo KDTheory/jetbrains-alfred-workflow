@@ -22,6 +22,7 @@ class Project
 
     const XPATH_PROJECT_NAME = "(//component[@name='ProjectView']/panes/pane[@id='ProjectPane']/subPane/PATH/PATH_ELEMENT/option/@value)[1]";
     const XPATH_PROJECT_NAME_ALT = "(//component[@name='ProjectView']/panes/pane[@id='ProjectPane']/subPane/expand/path/item[contains(@type, ':ProjectViewProjectNode')]/@name)[1]";
+    const XPATH_PROJECT_NAME_AS = "//string[@name='app_name']";
 
     /**
      * @var string
@@ -196,6 +197,15 @@ class Project
             return trim(basename($path, '.sln'));
         }
 
+        if (is_readable($path . '/app/src/main/res/values/strings.xml')) {
+            $this->log('  Work with app/src/main/res/values/strings.xml');
+            $workspaceXml = new SimpleXMLElement($path . '/app/src/main/res/values/strings.xml', null, true);
+            $nameElements = $workspaceXml->xpath(self::XPATH_PROJECT_NAME_AS);
+            if (count($nameElements) > 0) {
+                return trim($nameElements[0]->__toString());
+            }
+        }
+
         return false;
     }
 
@@ -335,3 +345,4 @@ class Project
 
 //echo (new Project('/usr/local/bin/pstorm'))->search('aaa') . "\n\n";
 //echo (new Project('/usr/local/bin/not_a_bin'))->search('aaa') . "\n\n";
+//echo (new Project('/usr/local/bin/studio'))->search('') . "\n\n";
